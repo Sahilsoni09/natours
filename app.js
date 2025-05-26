@@ -1,8 +1,14 @@
 const express = require('express');
 const fs = require("fs");
+const { request } = require('http');
 
 const app = express();
 app.use(express.json()); // Middleware to parse JSON bodies
+
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    next();
+})
 
 const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
@@ -12,6 +18,7 @@ const getAllTours = (req, res) => {
     res.status(200).json({
         status: 'success',
         result: tours.length,
+        requestTime: req.requestTime,
         data: {
             tours: tours
         }
